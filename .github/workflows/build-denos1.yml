@@ -1,7 +1,7 @@
-name: Build DenOS ISO testing
+name: Build DenOS ISO
 
 on:
-  workflow_dispatch:  # enables the Run workflow" button
+  workflow_dispatch:  # enables the "Run workflow" button in GitHub Actions
 
 jobs:
   build:
@@ -13,30 +13,30 @@ jobs:
 
       - name: Set up Docker and run DenOS build
         run: |
-          docker run --rm \
+          docker run --privileged --rm \
             -v ${{ github.workspace }}:/denos \
-            -w /denos \
+            -w /denos/ci-iso \
             debian:bookworm bash -c "
               set -e
               apt-get update
               apt-get install -y sudo debootstrap squashfs-tools grub-pc-bin grub-efi-amd64-bin xorriso mtools isolinux live-boot systemd-sysv \
                                  network-manager net-tools wireless-tools wpagui curl openssh-server openssh-client blackbox xserver-xorg-core xserver-xorg xinit xterm \
-                                 screenfetch screen lxterminal vim iputils-ping psmisc htop nmap wget git ca-certificates nano fdisk              
-              bash scripts/01_denos_pre_reqs.sh
+                                 screenfetch screen lxterminal vim iputils-ping psmisc htop nmap wget git ca-certificates nano fdisk
+
+              echo '--- Running DenOS Build Scripts ---'
+              bash scripts/01_denos_prepare.sh
               bash scripts/02_denos_debootstrap.sh
               bash scripts/03_denos_chroot.sh
-              bash scripts/04_denos_MakeSquashfs.sh
-              bash scripts/05_denos_BiosUEFI_ISO.sh
+              bash scripts/04_denos_squashfs.sh
+              bash scripts/05_denos_iso.sh
+
+              echo '✅ DenOS Build Completed Successfully'
             "
 
-         - name: Debug ISO location
-           run: |
-            echo "Looking for ISO files..."
-            find /home/runner/work/denos -type f -name "*.iso" || true
-
-         - name: Upload ISO Artifact
-           uses: actions/upload-artifact@v4
-           with:
-           name: denos-iso
-           path: /home/runner/work/denos/
-             denos/output/denos.iso 
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: denos-iso
+          path: |
+            ci-iso/*.iso
+            ci-iso/output/*.iso
