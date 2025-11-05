@@ -33,8 +33,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: denos-iso
-          path: |
-            *.iso
-            output/*.iso
-            build/*.iso
+          path: /home/runner/work/denos/
+            denos/output/denos.iso
 
