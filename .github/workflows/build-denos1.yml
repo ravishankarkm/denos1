@@ -24,6 +24,8 @@ jobs:
                                  screenfetch screen lxterminal vim iputils-ping psmisc htop nmap wget git ca-certificates nano fdisk
 
               echo '--- Running DenOS Build Scripts ---'
+              export GITHUB_WORKSPACE=${{ github.workspace }}
+              export echo "$GITHUB_WORKSPACE"
               bash scripts/01_denos_pre_reqs.sh
               bash scripts/02_denos_debootstrap.sh
               bash scripts/03_denos_chroot.sh
