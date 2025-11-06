@@ -31,13 +31,12 @@ jobs:
       - name: Run DenOS build scripts
         run: |
           set -e
-          mkdir -p $GITHUB_WORKSPACE/output
           scripts/01_denos_pre_reqs.sh
           scripts/02_denos_debootstrap.sh
           scripts/03_denos_chroot.sh || ./03_denos_chroot_lxde.sh || true
           scripts/04_denos_MakeSquashfs.sh
-          mkdir -p $GITHUB_WORKSPACE/output
           scripts/05_denos_BiosUEFI_ISO.sh
+          mkdir -p $GITHUB_WORKSPACE/output
           # Move final ISO (whatever its name) to output/
           find . -type f -name "*.iso" -exec mv {} $GITHUB_WORKSPACE/output/ \;
 
