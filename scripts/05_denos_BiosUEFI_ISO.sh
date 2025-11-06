@@ -62,9 +62,12 @@ xorriso \
 
 
 ls -lh $HOME/$LIVE_BOOT/*.iso
-# --- Copy final ISO to GitHub workspace if running under GitHub Actions ---
-if [ -n "$GITHUB_WORKSPACE" ] && [ -f /root//-.iso ]; then
-    echo "Copying final ISO to GitHub workspace..."
+# --- Copy final ISO to GitHub workspace if available ---
+if [ -n "$GITHUB_WORKSPACE" ]; then
+    echo "Detected GitHub Actions environment."
     mkdir -p "$GITHUB_WORKSPACE/output"
-    cp -v /root//-.iso "$GITHUB_WORKSPACE/output/denos.iso"
+    echo "Copying ISO to $GITHUB_WORKSPACE/output/ ..."
+    find "$HOME/$LIVE_BOOT" -type f -name "*.iso" -exec cp -v {} "$GITHUB_WORKSPACE/output/" \;
+else
+    echo "GITHUB_WORKSPACE not set, skipping ISO copy."
 fi
